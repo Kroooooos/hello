@@ -60,7 +60,7 @@
   }
   .lede { margin: 0; max-width: 40ch; color: var(--muted); font-size: 17px; }
 
-  .ask-zone { position: relative; height: 210px; margin-top: 30px; }
+  .ask-zone { position: relative; height: 250px; margin-top: 30px; }
   .ask-row { display: flex; align-items: center; gap: 14px; }
   button { font: inherit; cursor: pointer; }
   .btn-yes {
@@ -321,12 +321,30 @@
     no.textContent = label;
     $("hintKara").textContent = kara;
     $("hintEn").textContent = en;
-    const z = zone.getBoundingClientRect(), b = no.getBoundingClientRect();
+    const zw = zone.clientWidth, zh = zone.clientHeight;
+    const scale = Math.min(1 + noCount * 0.12, 1.7, zw / yes.offsetWidth);
+    yes.style.transform = `scale(${scale})`;
+
+    // Where Yes will sit once scaled (it grows from its left-centre), padded so No never tucks under it.
+    const pad = 10, cy = yes.offsetTop + yes.offsetHeight / 2;
+    const yesBox = {
+      l: yes.offsetLeft - pad,
+      r: yes.offsetLeft + yes.offsetWidth * scale + pad,
+      t: cy - (yes.offsetHeight * scale) / 2 - pad,
+      b: cy + (yes.offsetHeight * scale) / 2 + pad,
+    };
+    const bw = no.offsetWidth, bh = no.offsetHeight, maxX = zw - bw, maxY = zh - bh - 64;
+    const oldX = no.offsetLeft, oldY = no.offsetTop;
+    const clearOfYes = (x, y) => x + bw < yesBox.l || x > yesBox.r || y + bh < yesBox.t || y > yesBox.b;
+    const movedAway = (x, y) => Math.hypot(x - oldX, y - oldY) > bw * 0.8;
+    let x = 0, y = yesBox.b;
+    for (let i = 0; i < 60; i++) {
+      const cx = Math.random() * maxX, cy2 = Math.random() * maxY;
+      if (clearOfYes(cx, cy2) && movedAway(cx, cy2)) { x = cx; y = cy2; break; }
+    }
     no.classList.add("loose");
-    no.style.left = Math.round(Math.random() * Math.max(0, z.width - b.width)) + "px";
-    no.style.top = Math.round(Math.random() * Math.max(0, z.height - b.height - 64)) + "px";
-    const fit = z.width / yes.offsetWidth;
-    yes.style.transform = `scale(${Math.min(1 + noCount * 0.12, 1.7, fit)})`;
+    no.style.left = Math.round(Math.max(0, Math.min(x, maxX))) + "px";
+    no.style.top = Math.round(Math.max(0, Math.min(y, maxY))) + "px";
   }
   no.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") dodge(); });
   no.addEventListener("pointerdown", dodge);
