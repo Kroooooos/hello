@@ -113,7 +113,7 @@
   .hp { position: absolute; left: -9999px; }
 
   .progress { height: 4px; border-radius: 99px; background: var(--line); overflow: hidden; margin-bottom: 14px; }
-  .progress span { display: block; height: 100%; width: 25%; background: var(--rose); border-radius: inherit; transition: width .35s ease; }
+  .progress span { display: block; height: 100%; width: 33.34%; background: var(--rose); border-radius: inherit; transition: width .35s ease; }
   .page { display: grid; gap: 14px; animation: rise .4s ease both; }
   .page h1 { margin: 6px 0 0; font-size: clamp(36px, 9.5vw, 52px); }
   .page .lede { margin-bottom: 8px; }
@@ -169,7 +169,7 @@
 
   <section class="step" id="stepForm" hidden>
     <div class="progress" aria-hidden="true"><span id="bar"></span></div>
-    <p class="hello" id="stepLabel">1 of 4</p>
+    <p class="hello" id="stepLabel">1 of 3</p>
 
     <form id="form" novalidate>
       <input class="hp" type="text" name="website" id="website" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -208,21 +208,12 @@
       </div>
 
       <div class="page" hidden>
-        <h1>A little about <em>you</em></h1>
-        <p class="lede">So I know who said yes 😊</p>
-        <label class="sr" for="nickname">Your name</label>
-        <input type="text" id="nickname" name="nickname" maxlength="40" placeholder="Your name" autocomplete="given-name" required>
-        <label class="sr" for="contact">How can I reach you</label>
-        <input type="text" id="contact" name="contact" maxlength="80" placeholder="LINE / IG / phone (optional)">
+        <h1>Anything I should <em>know</em>?</h1>
+        <p class="lede">Both optional. Only I can read this 🤫</p>
         <label class="sr" for="diet">Food you don't eat</label>
-        <input type="text" id="diet" name="diet" maxlength="200" placeholder="Anything you don't eat? (optional)">
-      </div>
-
-      <div class="page" hidden>
-        <h1>Anything you'd like to <em>tell me</em>?</h1>
-        <p class="lede">Totally optional. Only I can read this 🤫</p>
+        <input type="text" id="diet" name="diet" maxlength="200" placeholder="Anything you don't eat? 🙅‍♀️🌶️">
         <label class="sr" for="message">Note</label>
-        <textarea id="message" name="message" maxlength="1000" placeholder="Write anything…"></textarea>
+        <textarea id="message" name="message" maxlength="1000" placeholder="A little note for me… 💌"></textarea>
       </div>
 
       <p class="err" id="err" role="alert"></p>
@@ -248,6 +239,8 @@
   const SHEET_URL = "https://script.google.com/macros/s/AKfycbxj6Bqh_L0G_XngacAR5LYqw-cJyqMTouziJ6Ir1-CFAZtn7MN9gUM_Zl296r-1339Myw/exec";
   const $ = (id) => document.getElementById(id);
   let noCount = 0;
+  // Each person gets their own ?i=<code> link; the Sheet maps the code to who it was sent to.
+  const code = (new URLSearchParams(location.search).get("i") || "").toLowerCase().slice(0, 12);
 
 
   const iso = (d) => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
@@ -367,7 +360,6 @@
   function problem() {
     if (page === 0 && !document.querySelector('[name="activities"]:checked')) return ["Pick at least one, pretty please 🥺👉👈", "act-drink"];
     if (page === 1 && !$("date").value) return ["Which day works for you? 📅✨", "date"];
-    if (page === 2 && !$("nickname").value.trim()) return ["Wait, what should I call you? 🙈", "nickname"];
     return null;
   }
 
@@ -384,8 +376,7 @@
     const cuisine = fd.getAll("cuisine");
     const activities = fd.getAll("activities").map((a) => (a === "Dinner" && cuisine.length ? `Dinner (${cuisine.join(" / ")})` : a));
     const payload = {
-      nickname: fd.get("nickname"),
-      contact: fd.get("contact"),
+      code,
       date: fd.get("date"),
       slot: fd.get("slot") || "",
       activities,
