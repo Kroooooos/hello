@@ -239,8 +239,8 @@
   const SHEET_URL = "https://script.google.com/macros/s/AKfycbxj6Bqh_L0G_XngacAR5LYqw-cJyqMTouziJ6Ir1-CFAZtn7MN9gUM_Zl296r-1339Myw/exec";
   const $ = (id) => document.getElementById(id);
   let noCount = 0;
-  // Each person gets their own ?i=<code> link; the Sheet maps the code to who it was sent to.
-  const code = (new URLSearchParams(location.search).get("i") || "").toLowerCase().slice(0, 12);
+  // Links look like /hello/?Ploy — the name only goes to the Sheet, never onto the page.
+  const who = decodeURIComponent(location.search.slice(1).replace(/\+/g, " ")).trim().slice(0, 40);
 
 
   const iso = (d) => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
@@ -376,7 +376,7 @@
     const cuisine = fd.getAll("cuisine");
     const activities = fd.getAll("activities").map((a) => (a === "Dinner" && cuisine.length ? `Dinner (${cuisine.join(" / ")})` : a));
     const payload = {
-      code,
+      who,
       date: fd.get("date"),
       slot: fd.get("slot") || "",
       activities,
