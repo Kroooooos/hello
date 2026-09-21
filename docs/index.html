@@ -85,18 +85,6 @@
   }
   button:focus-visible, input:focus-visible, textarea:focus-visible, .chip input:focus-visible + span { outline: 2px solid var(--rose); outline-offset: 3px; }
 
-  .sheet {
-    margin-top: 28px;
-    background: var(--sheet);
-    border: 1px solid var(--line);
-    border-radius: 20px;
-    padding: 26px 22px;
-  }
-  @media (min-width: 520px) { .sheet { padding: 32px 30px; } }
-  form { display: grid; gap: 28px; }
-  .group { display: grid; gap: 12px; }
-  .q { margin: 0; font: 500 23px/1.25 var(--display); }
-  .q small { font: 400 13px var(--sans); color: var(--muted); margin-left: 6px; white-space: nowrap; }
   input[type=text], input[type=date], textarea {
     width: 100%; font: 16px/1.5 var(--sans); color: var(--ink);
     background: #fff; border: 1.5px solid var(--line); border-radius: 12px;
@@ -104,8 +92,6 @@
   }
   input:focus, textarea:focus { border-color: var(--rose); outline: none; }
   textarea { resize: vertical; min-height: 96px; }
-  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  @media (max-width: 480px) { .two { grid-template-columns: 1fr; } }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -126,10 +112,16 @@
   .cuisine p { margin: 0; font-size: 14px; color: var(--rose-deep); }
   .hp { position: absolute; left: -9999px; }
 
-  .err { color: #b4532a; font-size: 14px; margin: 0; }
+  .progress { height: 4px; border-radius: 99px; background: var(--line); overflow: hidden; margin-bottom: 14px; }
+  .progress span { display: block; height: 100%; width: 25%; background: var(--rose); border-radius: inherit; transition: width .35s ease; }
+  .page { display: grid; gap: 14px; animation: rise .4s ease both; }
+  .page h1 { margin: 6px 0 0; font-size: clamp(36px, 9.5vw, 52px); }
+  .page .lede { margin-bottom: 8px; }
+  .nav { display: flex; align-items: center; gap: 16px; margin-top: 30px; }
+  .btn-back { border: 0; background: none; color: var(--muted); padding: 12px 4px; font-weight: 500; }
+  .btn-back:hover { color: var(--ink); }
+  .err { margin-top: 14px; color: #b4532a; font-size: 14px; margin: 0; }
   .err:empty { display: none; }
-  .submit { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
-  .submit small { color: var(--muted); font-size: 13px; }
 
   .summary {
     margin: 26px 0 0; padding: 18px 20px;
@@ -175,70 +167,69 @@
   </section>
 
   <section class="step" id="stepForm" hidden>
-    <p class="hello">Lovely, you said yes.</p>
-    <h1>Let's pick <em>something</em> we'd both enjoy</h1>
-    <p class="lede">Fill in whatever you like. Only I will see your answers.</p>
+    <div class="progress" aria-hidden="true"><span id="bar"></span></div>
+    <p class="hello" id="stepLabel">1 of 4</p>
 
-    <div class="sheet">
-      <form id="form" novalidate>
-        <input class="hp" type="text" name="website" id="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <form id="form" novalidate>
+      <input class="hp" type="text" name="website" id="website" tabindex="-1" autocomplete="off" aria-hidden="true">
 
-        <div class="group">
-          <p class="q">What would you like to do? <small>pick any</small></p>
-          <div class="chips" role="group" aria-label="Activities">
-            <label class="chip"><input type="checkbox" name="activities" id="act-drink" value="A drink"><span>Grab a drink</span></label>
-            <label class="chip"><input type="checkbox" name="activities" id="act-dinner" value="Dinner"><span>Dinner</span></label>
-            <label class="chip"><input type="checkbox" name="activities" id="act-cafe" value="Café"><span>Café</span></label>
-            <label class="chip"><input type="checkbox" name="activities" id="act-walk" value="A walk"><span>A walk</span></label>
-            <label class="chip"><input type="checkbox" name="activities" id="act-run" value="A run"><span>Go for a run</span></label>
-            <label class="chip"><input type="checkbox" name="activities" id="act-tennis" value="Tennis"><span>Tennis</span></label>
-          </div>
-          <div class="cuisine" id="cuisineBox" hidden>
-            <p>What kind of food?</p>
-            <div class="chips" role="group" aria-label="Cuisine">
-              <label class="chip"><input type="checkbox" name="cuisine" id="cu-chinese" value="Chinese"><span>Chinese</span></label>
-              <label class="chip"><input type="checkbox" name="cuisine" id="cu-japanese" value="Japanese"><span>Japanese</span></label>
-              <label class="chip"><input type="checkbox" name="cuisine" id="cu-thai" value="Thai"><span>Thai</span></label>
-            </div>
+      <div class="page">
+        <h1>What would you like to <em>do</em>?</h1>
+        <p class="lede">Pick as many as you like.</p>
+        <div class="chips" role="group" aria-label="Activities">
+          <label class="chip"><input type="checkbox" name="activities" id="act-drink" value="A drink"><span>Grab a drink</span></label>
+          <label class="chip"><input type="checkbox" name="activities" id="act-dinner" value="Dinner"><span>Dinner</span></label>
+          <label class="chip"><input type="checkbox" name="activities" id="act-cafe" value="Café"><span>Café</span></label>
+          <label class="chip"><input type="checkbox" name="activities" id="act-walk" value="A walk"><span>A walk</span></label>
+          <label class="chip"><input type="checkbox" name="activities" id="act-run" value="A run"><span>Go for a run</span></label>
+          <label class="chip"><input type="checkbox" name="activities" id="act-tennis" value="Tennis"><span>Tennis</span></label>
+        </div>
+        <div class="cuisine" id="cuisineBox" hidden>
+          <p>What kind of food?</p>
+          <div class="chips" role="group" aria-label="Cuisine">
+            <label class="chip"><input type="checkbox" name="cuisine" id="cu-chinese" value="Chinese"><span>Chinese</span></label>
+            <label class="chip"><input type="checkbox" name="cuisine" id="cu-japanese" value="Japanese"><span>Japanese</span></label>
+            <label class="chip"><input type="checkbox" name="cuisine" id="cu-thai" value="Thai"><span>Thai</span></label>
           </div>
         </div>
+      </div>
 
-        <div class="group">
-          <p class="q">When are you free?</p>
-          <label class="sr" for="date">Date</label>
-          <input type="date" id="date" name="date" required>
-          <div class="chips" role="group" aria-label="Time of day">
-            <label class="chip"><input type="radio" name="slot" id="slot-morning" value="Morning"><span>Morning</span></label>
-            <label class="chip"><input type="radio" name="slot" id="slot-afternoon" value="Afternoon"><span>Afternoon</span></label>
-            <label class="chip"><input type="radio" name="slot" id="slot-evening" value="Evening" checked><span>Evening</span></label>
-          </div>
+      <div class="page" hidden>
+        <h1>When are you <em>free</em>?</h1>
+        <p class="lede">Pick a day and a time that suits you.</p>
+        <label class="sr" for="date">Date</label>
+        <input type="date" id="date" name="date" required>
+        <div class="chips" role="group" aria-label="Time of day">
+          <label class="chip"><input type="radio" name="slot" id="slot-morning" value="Morning"><span>Morning</span></label>
+          <label class="chip"><input type="radio" name="slot" id="slot-afternoon" value="Afternoon"><span>Afternoon</span></label>
+          <label class="chip"><input type="radio" name="slot" id="slot-evening" value="Evening" checked><span>Evening</span></label>
         </div>
+      </div>
 
-        <div class="group">
-          <p class="q">About you</p>
-          <div class="two">
-            <label class="sr" for="nickname">Your name</label>
-            <input type="text" id="nickname" name="nickname" maxlength="40" placeholder="Your name *" required>
-            <label class="sr" for="contact">How can I reach you</label>
-            <input type="text" id="contact" name="contact" maxlength="80" placeholder="LINE / IG / phone *" required>
-          </div>
-          <label class="sr" for="diet">Food you don't eat</label>
-          <input type="text" id="diet" name="diet" maxlength="200" placeholder="Anything you don't eat?">
-        </div>
+      <div class="page" hidden>
+        <h1>A little about <em>you</em></h1>
+        <p class="lede">So I know who said yes.</p>
+        <label class="sr" for="nickname">Your name</label>
+        <input type="text" id="nickname" name="nickname" maxlength="40" placeholder="Your name" autocomplete="given-name" required>
+        <label class="sr" for="contact">How can I reach you</label>
+        <input type="text" id="contact" name="contact" maxlength="80" placeholder="LINE / IG / phone (optional)">
+        <label class="sr" for="diet">Food you don't eat</label>
+        <input type="text" id="diet" name="diet" maxlength="200" placeholder="Anything you don't eat? (optional)">
+      </div>
 
-        <div class="group">
-          <p class="q">A note for me <small>optional</small></p>
-          <label class="sr" for="message">Note</label>
-          <textarea id="message" name="message" maxlength="1000" placeholder="Anything you'd like to say…"></textarea>
-        </div>
+      <div class="page" hidden>
+        <h1>Anything you'd like to <em>tell me</em>?</h1>
+        <p class="lede">Totally optional. Only I can read this.</p>
+        <label class="sr" for="message">Note</label>
+        <textarea id="message" name="message" maxlength="1000" placeholder="Write anything…"></textarea>
+      </div>
 
-        <p class="err" id="err" role="alert"></p>
-        <div class="submit">
-          <button class="btn-yes" type="submit" id="btnSubmit">Send</button>
-          <small>Private — only I can read this.</small>
-        </div>
-      </form>
-    </div>
+      <p class="err" id="err" role="alert"></p>
+      <div class="nav">
+        <button class="btn-back" type="button" id="btnBack" hidden>Back</button>
+        <button class="btn-yes" type="submit" id="btnNext">Next</button>
+      </div>
+    </form>
   </section>
 
   <section class="step" id="stepDone" hidden>
@@ -349,8 +340,38 @@
     }, 1000);
   });
 
+  const pages = [...document.querySelectorAll(".page")];
+  let page = 0;
+  const err = $("err");
+
+  function show(i) {
+    pages[page].hidden = true;
+    page = i;
+    pages[page].hidden = false;
+    $("bar").style.width = `${((page + 1) / pages.length) * 100}%`;
+    $("stepLabel").textContent = `${page + 1} of ${pages.length}`;
+    $("btnBack").hidden = page === 0;
+    $("btnNext").textContent = page === pages.length - 1 ? "Send" : "Next";
+    err.textContent = "";
+    scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function problem() {
+    if (page === 0 && !document.querySelector('[name="activities"]:checked')) return ["Pick at least one thing you'd enjoy.", "act-drink"];
+    if (page === 1 && !$("date").value) return ["Choose a day that works for you.", "date"];
+    if (page === 2 && !$("nickname").value.trim()) return ["Let me know your name.", "nickname"];
+    return null;
+  }
+
+  $("btnBack").addEventListener("click", () => show(page - 1));
+  $("form").addEventListener("input", () => { err.textContent = ""; });
+
   $("form").addEventListener("submit", async (e) => {
     e.preventDefault();
+    const issue = problem();
+    if (issue) { err.textContent = issue[0]; return $(issue[1]).focus(); }
+    if (page < pages.length - 1) return show(page + 1);
+
     const fd = new FormData(e.target);
     const cuisine = fd.getAll("cuisine");
     const activities = fd.getAll("activities").map((a) => (a === "Dinner" && cuisine.length ? `Dinner (${cuisine.join(" / ")})` : a));
@@ -365,14 +386,9 @@
       website: fd.get("website"),
       no_clicks: noCount,
     };
-    const err = $("err");
-    if (!activities.length) { err.textContent = "Pick at least one thing you'd enjoy."; return $("act-drink").focus(); }
-    if (!payload.date) { err.textContent = "Choose a day that works for you."; return $("date").focus(); }
-    if (!String(payload.nickname).trim()) { err.textContent = "Let me know your name."; return $("nickname").focus(); }
-    if (!String(payload.contact).trim()) { err.textContent = "Leave your LINE, IG or phone so I can reach you."; return $("contact").focus(); }
-    err.textContent = "";
-    const btn = $("btnSubmit");
+    const btn = $("btnNext");
     btn.disabled = true; btn.textContent = "Sending…";
+    $("btnBack").hidden = true;
     try {
       if (!SHEET_URL) throw new Error("This form isn't connected yet.");
       // Apps Script doesn't send CORS headers, so the response is opaque; a resolved fetch means it arrived.
@@ -383,13 +399,13 @@
         const dd = document.createElement("dd"); dd.textContent = v;
         $("summary").append(dt, dd);
       }
-      err.textContent = "";
       $("stepForm").hidden = true; $("stepDone").hidden = false;
       scrollTo({ top: 0, behavior: "smooth" });
       celebrate(innerWidth / 2, innerHeight / 3);
     } catch (ex) {
       err.textContent = ex.message === "Failed to fetch" ? "Connection hiccup — please tap Send again." : ex.message;
       btn.disabled = false; btn.textContent = "Send";
+      $("btnBack").hidden = false;
     }
   });
 })();
