@@ -220,7 +220,7 @@
             <label class="sr" for="nickname">Your name</label>
             <input type="text" id="nickname" name="nickname" maxlength="40" placeholder="Your name *" required>
             <label class="sr" for="contact">How can I reach you</label>
-            <input type="text" id="contact" name="contact" maxlength="80" placeholder="LINE / IG / phone">
+            <input type="text" id="contact" name="contact" maxlength="80" placeholder="LINE / IG / phone *" required>
           </div>
           <label class="sr" for="diet">Food you don't eat</label>
           <input type="text" id="diet" name="diet" maxlength="200" placeholder="Anything you don't eat?">
@@ -369,6 +369,7 @@
     if (!activities.length) { err.textContent = "Pick at least one thing you'd enjoy."; return $("act-drink").focus(); }
     if (!payload.date) { err.textContent = "Choose a day that works for you."; return $("date").focus(); }
     if (!String(payload.nickname).trim()) { err.textContent = "Let me know your name."; return $("nickname").focus(); }
+    if (!String(payload.contact).trim()) { err.textContent = "Leave your LINE, IG or phone so I can reach you."; return $("contact").focus(); }
     err.textContent = "";
     const btn = $("btnSubmit");
     btn.disabled = true; btn.textContent = "Sending…";
