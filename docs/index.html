@@ -160,7 +160,7 @@
   </svg>
 
   <section class="step" id="stepAsk">
-    <p class="hello">Hi <span class="name" id="toName">there</span> · <span class="thai">สวัสดีครับ</span></p>
+    <p class="hello">Hi there · <span class="thai">สวัสดีครับ</span></p>
     <h1>Would you like to go <em>out</em> with me?</h1>
     <p class="lede">Nothing fancy. A good meal, a little sunshine, maybe a game of tennis. Just you and me, taking it easy.</p>
 
@@ -241,7 +241,7 @@
   </section>
 
   <section class="step" id="stepDone" hidden>
-    <p class="hello">Thank you, <span class="name" id="doneName"></span></p>
+    <p class="hello">Thank you.</p>
     <h1>It's a <em>date</em>.</h1>
     <p class="lede">I'm really looking forward to it. I'll message you soon to sort out the details.</p>
     <dl class="summary" id="summary"></dl>
@@ -254,11 +254,8 @@
   // Google Apps Script web app URL (see google-apps-script.gs); replies land in your Google Sheet.
   const SHEET_URL = "https://script.google.com/macros/s/AKfycbxj6Bqh_L0G_XngacAR5LYqw-cJyqMTouziJ6Ir1-CFAZtn7MN9gUM_Zl296r-1339Myw/exec";
   const $ = (id) => document.getElementById(id);
-  const params = new URLSearchParams(location.search);
-  const to = (params.get("to") || "").trim().slice(0, 20);
   let noCount = 0;
 
-  if (to) $("toName").textContent = to;
 
   const iso = (d) => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
   const today = new Date();
@@ -346,7 +343,6 @@
     $("noHint").textContent = "Yay!";
     setTimeout(() => {
       $("stepAsk").hidden = true; $("stepForm").hidden = false;
-      if (to) $("nickname").value = to;
       scrollTo({ top: 0, behavior: "smooth" });
     }, 1000);
   });
@@ -357,7 +353,6 @@
     const cuisine = fd.getAll("cuisine");
     const activities = fd.getAll("activities").map((a) => (a === "Dinner" && cuisine.length ? `Dinner (${cuisine.join(" / ")})` : a));
     const payload = {
-      to,
       nickname: fd.get("nickname"),
       contact: fd.get("contact"),
       date: fd.get("date"),
@@ -379,7 +374,6 @@
       if (!SHEET_URL) throw new Error("This form isn't connected yet.");
       // Apps Script doesn't send CORS headers, so the response is opaque; a resolved fetch means it arrived.
       await fetch(SHEET_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
-      $("doneName").textContent = String(payload.nickname).trim();
       const day = new Date(payload.date + "T00:00").toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
       for (const [k, v] of [["When", `${day}${payload.slot ? ", " + payload.slot.toLowerCase() : ""}`], ["Plan", activities.join(", ")]]) {
         const dt = document.createElement("dt"); dt.textContent = k;
