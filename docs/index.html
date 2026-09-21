@@ -96,7 +96,7 @@
   form { display: grid; gap: 28px; }
   .group { display: grid; gap: 12px; }
   .q { margin: 0; font: 500 23px/1.25 var(--display); }
-  .q small { font: 400 13px var(--sans); color: var(--muted); margin-left: 6px; }
+  .q small { font: 400 13px var(--sans); color: var(--muted); margin-left: 6px; white-space: nowrap; }
   input[type=text], input[type=date], textarea {
     width: 100%; font: 16px/1.5 var(--sans); color: var(--ink);
     background: #fff; border: 1.5px solid var(--line); border-radius: 12px;
@@ -126,7 +126,8 @@
   .cuisine p { margin: 0; font-size: 14px; color: var(--rose-deep); }
   .hp { position: absolute; left: -9999px; }
 
-  .err { color: #b4532a; font-size: 14px; min-height: 20px; margin: 0; }
+  .err { color: #b4532a; font-size: 14px; margin: 0; }
+  .err:empty { display: none; }
   .submit { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
   .submit small { color: var(--muted); font-size: 13px; }
 
@@ -222,7 +223,7 @@
             <input type="text" id="contact" name="contact" maxlength="80" placeholder="LINE / IG / phone">
           </div>
           <label class="sr" for="diet">Food you don't eat</label>
-          <input type="text" id="diet" name="diet" maxlength="200" placeholder="Anything you don't eat? e.g. no spicy, no beef">
+          <input type="text" id="diet" name="diet" maxlength="200" placeholder="Anything you don't eat?">
         </div>
 
         <div class="group">
@@ -330,7 +331,8 @@
     no.style.left = Math.round(Math.random() * Math.max(0, z.width - b.width)) + "px";
     no.style.top = Math.round(Math.random() * Math.max(0, z.height - b.height - 36)) + "px";
     $("noHint").textContent = lines[Math.min(noCount - 1, lines.length - 1)];
-    yes.style.transform = `scale(${Math.min(1 + noCount * 0.12, 1.7)})`;
+    const fit = z.width / yes.offsetWidth;
+    yes.style.transform = `scale(${Math.min(1 + noCount * 0.12, 1.7, fit)})`;
   }
   no.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") dodge(); });
   no.addEventListener("pointerdown", dodge);
