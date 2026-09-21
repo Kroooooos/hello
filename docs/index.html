@@ -60,7 +60,7 @@
   }
   .lede { margin: 0; max-width: 40ch; color: var(--muted); font-size: 17px; }
 
-  .ask-zone { position: relative; height: 180px; margin-top: 30px; }
+  .ask-zone { position: relative; height: 210px; margin-top: 30px; }
   .ask-row { display: flex; align-items: center; gap: 14px; }
   button { font: inherit; cursor: pointer; }
   .btn-yes {
@@ -79,10 +79,9 @@
     transition: left .22s ease, top .22s ease;
   }
   .btn-no.loose { position: absolute; }
-  .no-hint {
-    position: absolute; left: 0; bottom: 0; margin: 0;
-    font: italic 21px/1.3 var(--display); color: var(--rose-deep);
-  }
+  .no-hint { position: absolute; left: 0; right: 0; bottom: 0; margin: 0; display: grid; gap: 2px; }
+  .no-hint .kara { font: italic 24px/1.2 var(--display); color: var(--rose-deep); }
+  .no-hint .en { font-size: 13px; color: var(--muted); }
   button:focus-visible, input:focus-visible, textarea:focus-visible, .chip input:focus-visible + span { outline: 2px solid var(--rose); outline-offset: 3px; }
 
   input[type=text], input[type=date], textarea {
@@ -153,7 +152,7 @@
   </svg>
 
   <section class="step" id="stepAsk">
-    <p class="hello">Hi there · <span class="thai">สวัสดีครับ</span></p>
+    <p class="hello">Hi there · <span class="thai">สวัสดีครับ</span> · Sawasdee khrap</p>
     <h1>Would you like to go <em>out</em> with me?</h1>
     <p class="lede">Nothing fancy. A good meal, a little sunshine, maybe a game of tennis. Just you and me, taking it easy.</p>
 
@@ -162,7 +161,7 @@
         <button class="btn-yes" id="btnYes" type="button">Yes, sounds nice</button>
         <button class="btn-no" id="btnNo" type="button">No</button>
       </div>
-      <p class="no-hint" id="noHint" aria-live="polite"></p>
+      <p class="no-hint" aria-live="polite"><span class="kara" id="hintKara"></span><span class="en" id="hintEn"></span></p>
     </div>
   </section>
 
@@ -304,24 +303,30 @@
   const celebrate = (x, y) => { if (!reduce) for (let i = 0; i < 60; i++) bits.push(burst(x, y)); };
 
   // ---- the "No" button that never quite gets clicked ----
+  // [No button label, Thai karaoke line, English meaning]
   const lines = [
-    "Are you sure?",
-    "Maybe think about it once more",
-    "I make a good travel buddy",
-    "I'll let you win at tennis",
-    "Coffee's on me. Forever.",
-    "The button doesn't want you to say no",
-    "Okay, the pink one is right there",
+    ["Jing mai?", "Jing mai khrap?", "Really?"],
+    ["Nae jai na?", "Nae jai na khrap?", "Are you sure?"],
+    ["Kid ik tee", "Kid ik tee si khrap", "Think about it once more"],
+    ["Mai ao…", "Liang moo kra ta eng na", "Mookata's on me"],
+    ["Mai dai na", "Hai chana tennis loey", "I'll even let you win at tennis"],
+    ["Jai rai!", "Jai rai jang loey", "You're so mean"],
+    ["Ngon laew", "Ngon laew na khrap", "Okay, now I'm sulking"],
+    ["Tam mai la?", "Kho o-kat noi na khrap", "Just give me one chance"],
+    ["Mai kod!", "Kod Yes noi na khrap", "Please just press Yes"],
   ];
   const zone = $("askZone"), no = $("btnNo"), yes = $("btnYes");
   function dodge(e) {
     if (e) e.preventDefault();
     noCount++;
+    const [label, kara, en] = lines[Math.min(noCount - 1, lines.length - 1)];
+    no.textContent = label;
+    $("hintKara").textContent = kara;
+    $("hintEn").textContent = en;
     const z = zone.getBoundingClientRect(), b = no.getBoundingClientRect();
     no.classList.add("loose");
     no.style.left = Math.round(Math.random() * Math.max(0, z.width - b.width)) + "px";
-    no.style.top = Math.round(Math.random() * Math.max(0, z.height - b.height - 36)) + "px";
-    $("noHint").textContent = lines[Math.min(noCount - 1, lines.length - 1)];
+    no.style.top = Math.round(Math.random() * Math.max(0, z.height - b.height - 64)) + "px";
     const fit = z.width / yes.offsetWidth;
     yes.style.transform = `scale(${Math.min(1 + noCount * 0.12, 1.7, fit)})`;
   }
@@ -333,7 +338,8 @@
     const r = yes.getBoundingClientRect();
     celebrate(r.left + r.width / 2, r.top + r.height / 2);
     yes.disabled = true; no.hidden = true;
-    $("noHint").textContent = "Yay!";
+    $("hintKara").textContent = "Dee jai mak khrap!";
+    $("hintEn").textContent = "So happy!";
     setTimeout(() => {
       $("stepAsk").hidden = true; $("stepForm").hidden = false;
       scrollTo({ top: 0, behavior: "smooth" });
