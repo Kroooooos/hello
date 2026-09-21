@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hello There</title>
+<meta name="description" content="A small question, and a few nice ideas.">
+<meta property="og:title" content="Hello, I have a small question">
+<meta property="og:description" content="It only takes a minute.">
+<meta name="theme-color" content="#eef3ea">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M6 26C6 13 15 6 27 5c-1 12-8 21-21 21z' fill='%233f7a4f'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Manrope:wght@400;500;600;700&family=Sarabun:wght@400;500&display=swap">
+<style>
+  :root {
+    --ground: #eef3ea;
+    --sheet: #fbfcf8;
+    --ink: #1e3325;
+    --muted: #5d6f62;
+    --line: #d9e3d4;
+    --leaf: #3f7a4f;
+    --leaf-deep: #2f6340;
+    --moss: #e2ecdc;
+    --sun: #f2dc7b;
+    --display: "Newsreader", "Iowan Old Style", Georgia, serif;
+    --sans: "Manrope", "Sarabun", -apple-system, "Segoe UI", sans-serif;
+    --thai: "Sarabun", "Thonburi", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { min-height: 100%; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(70vmax 45vmax at 85% -10%, #fbf6d9 0%, transparent 60%),
+      linear-gradient(180deg, var(--ground) 0%, #e6eee0 100%);
+    background-attachment: fixed;
+    color: var(--ink);
+    font: 16px/1.65 var(--sans);
+    padding: max(36px, env(safe-area-inset-top)) 16px max(48px, env(safe-area-inset-bottom));
+  }
+  #leaves { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  main { position: relative; z-index: 1; max-width: 540px; margin: 0 auto; }
+
+  .sprig { display: block; width: 92px; height: auto; margin: 0 0 18px -6px; }
+  .hello { margin: 0; color: var(--muted); font-size: 15px; }
+  .hello .name { color: var(--ink); font-weight: 600; }
+  .thai { font-family: var(--thai); }
+  h1 {
+    font: 400 clamp(40px, 10.5vw, 60px)/1.04 var(--display);
+    letter-spacing: -.015em;
+    margin: 10px 0 18px;
+    text-wrap: balance;
+  }
+  h1 em {
+    font-style: italic; color: var(--leaf);
+    background: linear-gradient(transparent 68%, var(--sun) 68%, var(--sun) 92%, transparent 92%);
+    padding: 0 .06em;
+  }
+  .lede { margin: 0; max-width: 40ch; color: var(--muted); font-size: 17px; }
+
+  .ask-zone { position: relative; height: 180px; margin-top: 30px; }
+  .ask-row { display: flex; align-items: center; gap: 14px; }
+  button { font: inherit; cursor: pointer; }
+  .btn-yes {
+    border: 0; border-radius: 999px;
+    background: var(--leaf); color: #fbfcf8;
+    padding: 13px 30px; font-weight: 600; font-size: 17px; white-space: nowrap;
+    transform-origin: left center;
+    transition: transform .28s cubic-bezier(.3,1.4,.5,1), background .2s;
+    position: relative; z-index: 2;
+  }
+  .btn-yes:hover { background: var(--leaf-deep); }
+  .btn-no {
+    border: 1.5px solid var(--line); border-radius: 999px;
+    background: var(--sheet); color: var(--muted);
+    padding: 11px 24px; font-weight: 500; white-space: nowrap;
+    transition: left .22s ease, top .22s ease;
+  }
+  .btn-no.loose { position: absolute; }
+  .no-hint {
+    position: absolute; left: 0; bottom: 0; margin: 0;
+    font: italic 21px/1.3 var(--display); color: var(--leaf-deep);
+  }
+  button:focus-visible, input:focus-visible, textarea:focus-visible, .chip input:focus-visible + span { outline: 2px solid var(--leaf); outline-offset: 3px; }
+
+  .sheet {
+    margin-top: 28px;
+    background: var(--sheet);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 26px 22px;
+  }
+  @media (min-width: 520px) { .sheet { padding: 32px 30px; } }
+  form { display: grid; gap: 28px; }
+  .group { display: grid; gap: 12px; }
+  .q { margin: 0; font: 500 23px/1.25 var(--display); }
+  .q small { font: 400 13px var(--sans); color: var(--muted); margin-left: 6px; }
+  input[type=text], input[type=date], textarea {
+    width: 100%; font: 16px/1.5 var(--sans); color: var(--ink);
+    background: #fff; border: 1.5px solid var(--line); border-radius: 12px;
+    padding: 11px 14px;
+  }
+  input:focus, textarea:focus { border-color: var(--leaf); outline: none; }
+  textarea { resize: vertical; min-height: 96px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 480px) { .two { grid-template-columns: 1fr; } }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { position: relative; }
+  .chip input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+  .chip span {
+    display: inline-block; padding: 8px 15px;
+    border: 1.5px solid var(--line); border-radius: 999px;
+    background: #fff; font-size: 15px; user-select: none;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  .chip input:checked + span { background: var(--leaf); border-color: var(--leaf); color: #fbfcf8; }
+  .cuisine {
+    display: grid; gap: 8px;
+    padding: 12px 14px; border-radius: 14px; background: var(--moss);
+  }
+  .cuisine .chip span { background: var(--sheet); }
+  .cuisine p { margin: 0; font-size: 14px; color: var(--leaf-deep); }
+  .hp { position: absolute; left: -9999px; }
+
+  .err { color: #b4532a; font-size: 14px; min-height: 20px; margin: 0; }
+  .submit { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+  .submit small { color: var(--muted); font-size: 13px; }
+
+  .summary {
+    margin: 26px 0 0; padding: 18px 20px;
+    border-left: 3px solid var(--sun); background: var(--sheet);
+    display: grid; grid-template-columns: auto 1fr; gap: 6px 18px;
+  }
+  .summary dt { color: var(--muted); font-size: 14px; }
+  .summary dd { margin: 0; font-weight: 500; }
+  .sign { margin: 28px 0 0; font: italic 26px/1.2 var(--display); color: var(--leaf); }
+
+  .step { animation: rise .5s ease both; }
+  @keyframes rise { from { opacity: .001; transform: translateY(8px); } }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<canvas id="leaves" aria-hidden="true"></canvas>
+
+<main>
+  <svg class="sprig" viewBox="0 0 92 60" aria-hidden="true">
+    <path d="M6 54 C 30 44, 52 30, 86 8" fill="none" stroke="#3f7a4f" stroke-width="2" stroke-linecap="round"/>
+    <path d="M30 43 C 24 30, 30 20, 40 16 C 42 28, 38 38, 30 43z" fill="#7fae7a"/>
+    <path d="M46 33 C 52 22, 64 20, 72 24 C 64 34, 54 36, 46 33z" fill="#a9cd96"/>
+    <path d="M58 24 C 56 12, 62 4, 72 2 C 72 12, 66 20, 58 24z" fill="#3f7a4f"/>
+    <path d="M20 49 C 22 60, 12 60, 8 58 C 10 52, 14 49, 20 49z" fill="#a9cd96"/>
+    <circle cx="86" cy="8" r="4" fill="#f2dc7b"/>
+  </svg>
+
+  <section class="step" id="stepAsk">
+    <p class="hello">Hi <span class="name" id="toName">there</span> · <span class="thai">สวัสดีครับ</span></p>
+    <h1>Would you like to go <em>out</em> with me?</h1>
+    <p class="lede">Nothing fancy. A good meal, a little sunshine, maybe a game of tennis. Just you and me, taking it easy.</p>
+
+    <div class="ask-zone" id="askZone">
+      <div class="ask-row">
+        <button class="btn-yes" id="btnYes" type="button">Yes, sounds nice</button>
+        <button class="btn-no" id="btnNo" type="button">No</button>
+      </div>
+      <p class="no-hint" id="noHint" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section class="step" id="stepForm" hidden>
+    <p class="hello">Lovely, you said yes.</p>
+    <h1>Let's pick <em>something</em> we'd both enjoy</h1>
+    <p class="lede">Fill in whatever you like. Only I will see your answers.</p>
+
+    <div class="sheet">
+      <form id="form" novalidate>
+        <input class="hp" type="text" name="website" id="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+        <div class="group">
+          <p class="q">What would you like to do? <small>pick any</small></p>
+          <div class="chips" role="group" aria-label="Activities">
+            <label class="chip"><input type="checkbox" name="activities" id="act-drink" value="A drink"><span>Grab a drink</span></label>
+            <label class="chip"><input type="checkbox" name="activities" id="act-dinner" value="Dinner"><span>Dinner</span></label>
+            <label class="chip"><input type="checkbox" name="activities" id="act-cafe" value="Café"><span>Café</span></label>
+            <label class="chip"><input type="checkbox" name="activities" id="act-walk" value="A walk"><span>A walk</span></label>
+            <label class="chip"><input type="checkbox" name="activities" id="act-run" value="A run"><span>Go for a run</span></label>
+            <label class="chip"><input type="checkbox" name="activities" id="act-tennis" value="Tennis"><span>Tennis</span></label>
+          </div>
+          <div class="cuisine" id="cuisineBox" hidden>
+            <p>What kind of food?</p>
+            <div class="chips" role="group" aria-label="Cuisine">
+              <label class="chip"><input type="checkbox" name="cuisine" id="cu-chinese" value="Chinese"><span>Chinese</span></label>
+              <label class="chip"><input type="checkbox" name="cuisine" id="cu-japanese" value="Japanese"><span>Japanese</span></label>
+              <label class="chip"><input type="checkbox" name="cuisine" id="cu-thai" value="Thai"><span>Thai</span></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="group">
+          <p class="q">When are you free?</p>
+          <label class="sr" for="date">Date</label>
+          <input type="date" id="date" name="date" required>
+          <div class="chips" role="group" aria-label="Time of day">
+            <label class="chip"><input type="radio" name="slot" id="slot-morning" value="Morning"><span>Morning</span></label>
+            <label class="chip"><input type="radio" name="slot" id="slot-afternoon" value="Afternoon"><span>Afternoon</span></label>
+            <label class="chip"><input type="radio" name="slot" id="slot-evening" value="Evening" checked><span>Evening</span></label>
+          </div>
+        </div>
+
+        <div class="group">
+          <p class="q">About you</p>
+          <div class="two">
+            <label class="sr" for="nickname">Your name</label>
+            <input type="text" id="nickname" name="nickname" maxlength="40" placeholder="Your name *" required>
+            <label class="sr" for="contact">How can I reach you</label>
+            <input type="text" id="contact" name="contact" maxlength="80" placeholder="LINE / IG / phone">
+          </div>
+          <label class="sr" for="diet">Food you don't eat</label>
+          <input type="text" id="diet" name="diet" maxlength="200" placeholder="Anything you don't eat? e.g. no spicy, no beef">
+        </div>
+
+        <div class="group">
+          <p class="q">A note for me <small>optional</small></p>
+          <label class="sr" for="message">Note</label>
+          <textarea id="message" name="message" maxlength="1000" placeholder="Anything you'd like to say…"></textarea>
+        </div>
+
+        <p class="err" id="err" role="alert"></p>
+        <div class="submit">
+          <button class="btn-yes" type="submit" id="btnSubmit">Send</button>
+          <small>Private — only I can read this.</small>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section class="step" id="stepDone" hidden>
+    <p class="hello">Thank you, <span class="name" id="doneName"></span></p>
+    <h1>It's a <em>date</em>.</h1>
+    <p class="lede">I'm really looking forward to it. I'll message you soon to sort out the details.</p>
+    <dl class="summary" id="summary"></dl>
+    <p class="sign">— <span id="signName">Kroos</span></p>
+  </section>
+</main>
+
+<script>
+(() => {
+  const API = location.hostname.endsWith("github.io") ? "https://kroos-hello.onrender.com" : "";
+  const $ = (id) => document.getElementById(id);
+  const params = new URLSearchParams(location.search);
+  const to = (params.get("to") || "").trim().slice(0, 20);
+  let noCount = 0;
+
+  if (to) $("toName").textContent = to;
+  // Render's free tier sleeps; wake it while she reads the page.
+  fetch(API + "/api/health").catch(() => {});
+
+  const iso = (d) => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  const today = new Date();
+  const sat = new Date(today);
+  sat.setDate(today.getDate() + ((6 - today.getDay() + 7) % 7 || 7));
+  $("date").min = iso(today);
+  $("date").value = iso(sat);
+
+  $("act-dinner").addEventListener("change", (e) => { $("cuisineBox").hidden = !e.target.checked; });
+
+  // ---- drifting leaves ----
+  const cv = $("leaves"), ctx = cv.getContext("2d");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const palette = ["#7fae7a", "#a9cd96", "#3f7a4f", "#f2dc7b"];
+  let W = 0, H = 0, bits = [];
+  function resize() {
+    const dpr = devicePixelRatio || 1;
+    W = innerWidth; H = innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    cv.style.width = W + "px"; cv.style.height = H + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function leaf(b) {
+    ctx.save();
+    ctx.translate(b.x, b.y); ctx.rotate(b.r); ctx.scale(b.s / 20, b.s / 20);
+    ctx.globalAlpha = b.a; ctx.fillStyle = b.c;
+    ctx.beginPath();
+    ctx.moveTo(0, -10);
+    ctx.quadraticCurveTo(9, 0, 0, 10);
+    ctx.quadraticCurveTo(-9, 0, 0, -10);
+    ctx.fill();
+    ctx.restore();
+  }
+  function drift() {
+    return { x: Math.random() * W, y: -20, vx: .2 + Math.random() * .4, vy: .35 + Math.random() * .5, s: 10 + Math.random() * 10, r: Math.random() * 6, vr: (Math.random() - .5) * .03, c: palette[(Math.random() * 3) | 0], a: .2 + Math.random() * .2, burst: false };
+  }
+  function burst(x, y) {
+    const t = Math.random() * Math.PI * 2, v = 3 + Math.random() * 6;
+    return { x, y, vx: Math.cos(t) * v, vy: Math.sin(t) * v - 4, s: 12 + Math.random() * 12, r: Math.random() * 6, vr: (Math.random() - .5) * .25, c: palette[(Math.random() * 4) | 0], a: 1, burst: true };
+  }
+  function tick() {
+    ctx.clearRect(0, 0, W, H);
+    if (bits.filter((b) => !b.burst).length < 10 && Math.random() < .03) bits.push(drift());
+    bits = bits.filter((b) => b.y < H + 30 && b.a > .02);
+    for (const b of bits) {
+      if (b.burst) { b.vy += .17; b.vx *= .985; b.a -= .009; }
+      b.x += b.vx + Math.sin(b.y / 50) * .4; b.y += b.vy; b.r += b.vr;
+      leaf(b);
+    }
+    requestAnimationFrame(tick);
+  }
+  resize(); addEventListener("resize", resize);
+  if (!reduce) tick();
+  const celebrate = (x, y) => { if (!reduce) for (let i = 0; i < 60; i++) bits.push(burst(x, y)); };
+
+  // ---- the "No" button that never quite gets clicked ----
+  const lines = [
+    "Are you sure?",
+    "Maybe think about it once more",
+    "I make a good travel buddy",
+    "I'll let you win at tennis",
+    "Coffee's on me. Forever.",
+    "The button doesn't want you to say no",
+    "Okay, the green one is right there",
+  ];
+  const zone = $("askZone"), no = $("btnNo"), yes = $("btnYes");
+  function dodge(e) {
+    if (e) e.preventDefault();
+    noCount++;
+    const z = zone.getBoundingClientRect(), b = no.getBoundingClientRect();
+    no.classList.add("loose");
+    no.style.left = Math.round(Math.random() * Math.max(0, z.width - b.width)) + "px";
+    no.style.top = Math.round(Math.random() * Math.max(0, z.height - b.height - 36)) + "px";
+    $("noHint").textContent = lines[Math.min(noCount - 1, lines.length - 1)];
+    yes.style.transform = `scale(${Math.min(1 + noCount * 0.12, 1.7)})`;
+  }
+  no.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") dodge(); });
+  no.addEventListener("pointerdown", dodge);
+  no.addEventListener("click", (e) => (e.detail === 0 ? dodge(e) : e.preventDefault()));
+
+  yes.addEventListener("click", () => {
+    const r = yes.getBoundingClientRect();
+    celebrate(r.left + r.width / 2, r.top + r.height / 2);
+    yes.disabled = true; no.hidden = true;
+    $("noHint").textContent = "Yay!";
+    setTimeout(() => {
+      $("stepAsk").hidden = true; $("stepForm").hidden = false;
+      if (to) $("nickname").value = to;
+      scrollTo({ top: 0, behavior: "smooth" });
+    }, 1000);
+  });
+
+  $("form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const cuisine = fd.getAll("cuisine");
+    const activities = fd.getAll("activities").map((a) => (a === "Dinner" && cuisine.length ? `Dinner (${cuisine.join(" / ")})` : a));
+    const payload = {
+      to,
+      nickname: fd.get("nickname"),
+      contact: fd.get("contact"),
+      date: fd.get("date"),
+      slot: fd.get("slot") || "",
+      activities,
+      diet: fd.get("diet"),
+      message: fd.get("message"),
+      website: fd.get("website"),
+      no_clicks: noCount,
+    };
+    const err = $("err");
+    if (!activities.length) { err.textContent = "Pick at least one thing you'd enjoy."; return $("act-drink").focus(); }
+    if (!payload.date) { err.textContent = "Choose a day that works for you."; return $("date").focus(); }
+    if (!String(payload.nickname).trim()) { err.textContent = "Let me know your name."; return $("nickname").focus(); }
+    err.textContent = "";
+    const btn = $("btnSubmit");
+    btn.disabled = true; btn.textContent = "Sending…";
+    const slow = setTimeout(() => { err.textContent = "Still sending — just a few more seconds."; }, 5000);
+    try {
+      const r = await fetch(API + "/api/respond", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || "Something went wrong. Please try again.");
+      $("doneName").textContent = String(payload.nickname).trim();
+      const day = new Date(payload.date + "T00:00").toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+      for (const [k, v] of [["When", `${day}${payload.slot ? ", " + payload.slot.toLowerCase() : ""}`], ["Plan", activities.join(", ")]]) {
+        const dt = document.createElement("dt"); dt.textContent = k;
+        const dd = document.createElement("dd"); dd.textContent = v;
+        $("summary").append(dt, dd);
+      }
+      err.textContent = "";
+      $("stepForm").hidden = true; $("stepDone").hidden = false;
+      scrollTo({ top: 0, behavior: "smooth" });
+      celebrate(innerWidth / 2, innerHeight / 3);
+    } catch (ex) {
+      err.textContent = ex.message === "Failed to fetch" ? "Connection hiccup — please tap Send again." : ex.message;
+      btn.disabled = false; btn.textContent = "Send";
+    } finally {
+      clearTimeout(slow);
+    }
+  });
+})();
+</script>
+</body>
+</html>
