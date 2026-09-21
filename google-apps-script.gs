@@ -1,4 +1,4 @@
-const HEADERS = ["Time", "Who", "Date", "Time of day", "Plan", "Doesn't eat", "Note", "Times she dodged No", "Status"];
+const HEADERS = ["Time", "Who", "Birthday", "Sign", "Date", "Time of day", "Plan", "Doesn't eat", "Note", "Times she dodged No", "Status"];
 const PAGE_URL = "https://kroooooos.github.io/hello/";
 
 function onOpen() {
@@ -38,6 +38,8 @@ function doPost(e) {
     sheet.appendRow([
       new Date(),
       clean(d.who, 40) || "(no name in link)",
+      d.birthday ? "'" + clean(d.birthday, 5) : "", // keep "04-12" as text, not a date
+      clean(d.sign, 12),
       clean(d.date, 10),
       clean(d.slot, 20),
       clean((d.activities || []).join(", "), 200),

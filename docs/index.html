@@ -113,13 +113,28 @@
   .hp { position: absolute; left: -9999px; }
 
   .progress { height: 4px; border-radius: 99px; background: var(--line); overflow: hidden; margin-bottom: 14px; }
-  .progress span { display: block; height: 100%; width: 33.34%; background: var(--rose); border-radius: inherit; transition: width .35s ease; }
+  .progress span { display: block; height: 100%; width: 25%; background: var(--rose); border-radius: inherit; transition: width .35s ease; }
   .page { display: grid; gap: 14px; animation: rise .4s ease both; }
   .page h1 { margin: 6px 0 0; font-size: clamp(36px, 9.5vw, 52px); }
   .page .lede { margin-bottom: 8px; }
   .nav { display: flex; align-items: center; gap: 16px; margin-top: 30px; }
   .btn-back { border: 0; background: none; color: var(--muted); padding: 12px 4px; font-weight: 500; }
   .btn-back:hover { color: var(--ink); }
+  .bday { display: grid; grid-template-columns: 1.4fr 1fr; gap: 10px; }
+  select {
+    width: 100%; font: 16px/1.5 var(--sans); color: var(--ink);
+    background: #fff; border: 1.5px solid var(--line); border-radius: 12px;
+    padding: 11px 14px; appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+    background-position: calc(100% - 20px) 55%, calc(100% - 14px) 55%;
+    background-size: 6px 6px; background-repeat: no-repeat;
+  }
+  select:focus { border-color: var(--rose); outline: none; }
+  .zodiac-chip { margin: 0; justify-self: start; width: fit-content; padding: 8px 16px; border-radius: 999px; background: var(--blush); color: var(--rose-deep); font-weight: 600; animation: rise .35s ease both; }
+  .star-card { margin: 24px 0 0; padding: 20px 22px; border-radius: 18px; background: var(--sheet); border: 1px solid var(--line); display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; align-items: center; }
+  .star-card .glyph { grid-row: span 2; font: 400 52px/1 var(--display); color: var(--rose); }
+  .star-card .name { font-weight: 700; color: var(--rose-deep); font-size: 14px; letter-spacing: .06em; text-transform: uppercase; }
+  .star-card .line { margin: 0; }
   .err { margin: 14px 0 0; justify-self: start; width: fit-content; padding: 8px 14px; border-radius: 14px; background: var(--blush); color: var(--rose-deep); font-size: 14.5px; font-weight: 500; animation: wiggle .4s ease; }
   @keyframes wiggle { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
   .err:empty { display: none; }
@@ -169,7 +184,7 @@
 
   <section class="step" id="stepForm" hidden>
     <div class="progress" aria-hidden="true"><span id="bar"></span></div>
-    <p class="hello" id="stepLabel">1 of 3</p>
+    <p class="hello" id="stepLabel">1 of 4</p>
 
     <form id="form" novalidate>
       <input class="hp" type="text" name="website" id="website" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -208,6 +223,24 @@
       </div>
 
       <div class="page" hidden>
+        <h1>When's your <em>birthday</em>? 🎂</h1>
+        <p class="lede">Just the day and month. Optional, but I'm curious ✨</p>
+        <div class="bday">
+          <label class="sr" for="bMonth">Month</label>
+          <select id="bMonth" name="bMonth">
+            <option value="">Month</option>
+            <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+            <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+            <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+            <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+          </select>
+          <label class="sr" for="bDay">Day</label>
+          <select id="bDay" name="bDay"><option value="">Day</option></select>
+        </div>
+        <p class="zodiac-chip" id="zodiacChip" aria-live="polite" hidden></p>
+      </div>
+
+      <div class="page" hidden>
         <h1>Anything I should <em>know</em>?</h1>
         <p class="lede">Both optional. Only I can read this 🤫</p>
         <label class="sr" for="diet">Food you don't eat</label>
@@ -225,9 +258,14 @@
   </section>
 
   <section class="step" id="stepDone" hidden>
-    <p class="hello">Thank you.</p>
-    <h1>It's a <em>date</em>.</h1>
-    <p class="lede">I'm really looking forward to it 🥰 I'll message you soon to sort out the details.</p>
+    <p class="hello">Yay, you made my day 🥹</p>
+    <h1>I'm so <em>happy</em>!</h1>
+    <p class="lede">Can't wait to see you 🥰 I'll message you soon to sort out the details.</p>
+    <div class="star-card" id="starCard" hidden>
+      <span class="glyph" id="starGlyph" aria-hidden="true"></span>
+      <span class="name" id="starName"></span>
+      <p class="line" id="starLine"></p>
+    </div>
     <dl class="summary" id="summary"></dl>
     <p class="sign">— <span id="signName">Kroos</span></p>
   </section>
@@ -362,6 +400,42 @@
     }, 1000);
   });
 
+  const SIGNS = [
+    // [name, glyph, last day of the sign in its end month (month, day), line]
+    ["Capricorn", "♑", 1, 19, "Capricorn, I'll be right on time, promise. You can count on me ⏰"],
+    ["Aquarius", "♒", 2, 18, "Aquarius, let's do something a little different from the usual 🌌"],
+    ["Pisces", "♓", 3, 20, "Pisces, it's going to be a sweet one, just like you 🫧"],
+    ["Aries", "♈", 4, 19, "An Aries says yes fast, and I love that energy. Let's make it fun 🔥"],
+    ["Taurus", "♉", 5, 20, "Taurus knows good food, so I'll make sure we eat really, really well 🍰"],
+    ["Gemini", "♊", 6, 20, "Gemini means we'll never run out of things to talk about 💬"],
+    ["Cancer", "♋", 7, 22, "Cancer, I'll pick somewhere cosy and warm, just for us 🌙"],
+    ["Leo", "♌", 8, 22, "A Leo deserves the spotlight. I'll find somewhere worthy of you 👑"],
+    ["Virgo", "♍", 9, 22, "Virgo, I've got the details covered. You just relax and enjoy 📝"],
+    ["Libra", "♎", 10, 22, "Libra loves pretty things. I'll find a place with a lovely view 🌸"],
+    ["Scorpio", "♏", 11, 21, "Scorpio, I promise it'll be worth your trust 🖤"],
+    ["Sagittarius", "♐", 12, 21, "Sagittarius loves an adventure, so let's make this a fun one 🏹"],
+  ];
+  function signFor(m, d) {
+    const i = SIGNS.findIndex(([, , em, ed]) => m === em && d <= ed);
+    return i >= 0 ? SIGNS[i] : SIGNS[m % 12];
+  }
+  function birthday() {
+    const m = Number($("bMonth").value), d = Number($("bDay").value);
+    return m && d ? { m, d, sign: signFor(m, d) } : null;
+  }
+  $("bMonth").addEventListener("change", () => {
+    const m = Number($("bMonth").value), keep = $("bDay").value;
+    const days = m ? new Date(2024, m, 0).getDate() : 31;
+    $("bDay").replaceChildren(new Option("Day", ""), ...Array.from({ length: days }, (_, i) => new Option(i + 1, i + 1)));
+    if (keep && keep <= days) $("bDay").value = keep;
+  });
+  $("bMonth").dispatchEvent(new Event("change"));
+  $("form").addEventListener("change", () => {
+    const b = birthday();
+    $("zodiacChip").hidden = !b;
+    if (b) $("zodiacChip").textContent = `${b.sign[1]} Oh, ${/^[AEIOU]/.test(b.sign[0]) ? "an" : "a"} ${b.sign[0]}! ✨`;
+  });
+
   const pages = [...document.querySelectorAll(".page")];
   let page = 0;
   const err = $("err");
@@ -398,6 +472,8 @@
     const activities = fd.getAll("activities").map((a) => (a === "Dinner" && cuisine.length ? `Dinner (${cuisine.join(" / ")})` : a));
     const payload = {
       who,
+      birthday: birthday() ? `${String(birthday().m).padStart(2, "0")}-${String(birthday().d).padStart(2, "0")}` : "",
+      sign: birthday() ? birthday().sign[0] : "",
       date: fd.get("date"),
       slot: fd.get("slot") || "",
       activities,
@@ -418,6 +494,13 @@
         const dt = document.createElement("dt"); dt.textContent = k;
         const dd = document.createElement("dd"); dd.textContent = v;
         $("summary").append(dt, dd);
+      }
+      const b = birthday();
+      if (b) {
+        $("starGlyph").textContent = b.sign[1] + "\uFE0E";
+        $("starName").textContent = b.sign[0];
+        $("starLine").textContent = b.sign[4];
+        $("starCard").hidden = false;
       }
       $("stepForm").hidden = true; $("stepDone").hidden = false;
       scrollTo({ top: 0, behavior: "smooth" });
