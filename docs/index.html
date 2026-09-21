@@ -240,7 +240,10 @@
   const $ = (id) => document.getElementById(id);
   let noCount = 0;
   // Links look like /hello/?Ploy — the name only goes to the Sheet, never onto the page.
-  const who = decodeURIComponent(location.search.slice(1).replace(/\+/g, " ")).trim().slice(0, 40);
+  // Chat apps may append their own params (?Ploy&fbclid=…), so only the first bare segment counts.
+  const first = location.search.slice(1).split("&")[0];
+  let who = "";
+  try { who = first.includes("=") ? "" : decodeURIComponent(first.replace(/\+/g, " ")).trim().slice(0, 40); } catch {}
 
 
   const iso = (d) => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
